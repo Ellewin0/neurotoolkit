@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniQuest: Academic Success Strategy Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sage-green: #8fb299;
+            --muted-lavender: #a78bfa;
+            --soft-peach: #fca5a5;
+            --bg-cream: #fdfcf9;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9f5; color: #334155; scroll-behavior: smooth; }
+        .chart-container { position: relative; width: 100%; max-width: 400px; margin: auto; height: 300px; }
+        .step-item.active { color: var(--sage-green); border-bottom: 3px solid var(--sage-green); font-weight: 700; }
+        .step-item.completed { color: #16a34a; }
+        .btn-primary { background-color: var(--sage-green); color: white; transition: all 0.3s; }
+        .btn-primary:hover { filter: brightness(0.9); transform: translateY(-1px); }
+        .btn-secondary { background-color: #e2e8f0; color: #475569; transition: all 0.3s; }
+        .card-strength { border-left: 6px solid var(--muted-lavender); background-color: #f5f3ff; }
+        .card-challenge { border-left: 6px solid var(--soft-peach); background-color: #fff1f2; }
+        
+        /* THE NEW PRINT ENGINE: Professional Single-Page Layout */
+        @media print {
+            @page {
+                size: A4;
+                margin: 8mm;
+            }
+            .no-print { display: none !important; }
+            body { background: white !important; padding: 0 !important; font-size: 10pt; }
+            #app { padding: 0 !important; max-width: 100% !important; margin: 0 !important; }
+            main { 
+                box-shadow: none !important; 
+                border: 2px solid #eee !important; 
+                border-radius: 0 !important; 
+                overflow: visible !important; 
+                width: 100% !important; 
+            }
+            /* Reset section heights to allow content to sit naturally */
+            #section-5 { 
+                display: flex !important; 
+                flex-direction: column !important;
+                gap: 15pt !important;
+                padding: 10pt !important;
+                height: auto !important;
+                overflow: visible !important;
+            }
+            .chart-container { height: 240px !important; max-width: 350px !important; }
+            .grid { display: grid !important; }
+            /* Force side-by-side printing */
+            .print-cols { grid-template-columns: 1.2fr 1fr !important; gap: 15pt !important; }
+            .strategy-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 8pt !important; }
+            .roadmap-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 10pt !important; }
+            
+            /* Text optimizations */
+            h1 { font-size: 20pt !important; }
+            h2 { font-size: 16pt !important; }
+            .text-4xl { font-size: 18pt !important; }
+            .text-sm { font-size: 9pt !important; }
+            .p-8, .p-12 { padding: 0 !important; }
+            .rounded-\[2\.5rem\] { border-radius: 12pt !important; }
+            .bg-indigo-50 { border: 1px solid #ddd !important; }
+        }
+
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="antialiased py-6">
+
+    <div id="app" class="max-w-5xl mx-auto p-4 sm:p-6">
+        <!-- Header -->
+        <header class="text-center mb-10 no-print">
+            <div class="inline-block bg-[#8fb299] p-3 rounded-2xl shadow-sm mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h1 class="text-4xl font-black text-slate-900 tracking-tight">UniQuest Strategy Guide</h1>
+            <p class="mt-2 text-slate-600 font-medium italic text-sm">Empowering your academic journey through strengths-based mapping.</p>
+        </header>
+
+        <!-- Progress Navigation -->
+        <nav id="steps-nav" class="mb-10 no-print">
+            <ol class="flex items-center justify-between w-full text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-400 border-b border-slate-200">
+                <li id="step-nav-1" class="step-item active pb-3 px-1 flex-1 text-center">1. Mapping</li>
+                <li id="step-nav-2" class="step-item pb-3 px-1 flex-1 text-center">2. Strengths</li>
+                <li id="step-nav-3" class="step-item pb-3 px-1 flex-1 text-center">3. Challenges</li>
+                <li id="step-nav-4" class="step-item pb-3 px-1 flex-1 text-center">4. Strategies</li>
+                <li id="step-nav-5" class="step-item pb-3 px-1 flex-1 text-center">5. Final Guide</li>
+            </ol>
+        </nav>
+
+        <main class="bg-white shadow-xl rounded-[2.5rem] border border-slate-100 overflow-hidden">
+            
+            <!-- SECTION 1: THE SPIKY PROFILE -->
+            <section id="section-1" class="fade-in p-8 sm:p-12 space-y-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                    <div class="space-y-6">
+                        <h2 class="text-3xl font-black text-slate-900">Phase 1: Your Academic Profile</h2>
+                        <div class="bg-emerald-50 p-6 rounded-3xl border border-emerald-100 text-sm leading-relaxed text-slate-700">
+                            <h3 class="font-bold text-emerald-900 mb-2">The Spiky Profile Concept</h3>
+                            <p>A <strong>Spiky Profile</strong> means your cognitive skills don't sit on a flat line. You have areas of extreme capability ("Peaks") and areas that require more energy to process ("Valleys").</p>
+                            <p class="mt-3 text-emerald-800 font-medium italic">Your goal is to use your "Peaks" to bridge your "Valleys."</p>
+                        </div>
+                        <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">Select the traits that define your experience:</p>
+                        <div id="trait-checklist" class="space-y-2">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+                    <div class="sticky top-8 chart-container bg-slate-50 rounded-3xl p-6 border border-slate-100">
+                        <canvas id="profileChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="pt-8 border-t flex justify-end no-print">
+                    <button onclick="goToSection(2)" class="btn-primary font-bold py-4 px-8 rounded-2xl shadow-md">Next: Your Strengths &rarr;</button>
+                </div>
+            </section>
+
+            <!-- SECTION 2: STRENGTHS -->
+            <section id="section-2" class="hidden fade-in p-8 sm:p-12 space-y-8">
+                <div class="max-w-2xl">
+                    <h2 class="text-3xl font-black text-slate-900 mb-4">Phase 2: Academic Assets</h2>
+                    <p class="text-slate-600 leading-relaxed">What comes easily to you? When do you feel most capable? Identifying your assets allows us to build a plan that works with your brain's natural momentum.</p>
+                </div>
+
+                <div class="bg-purple-50 p-6 rounded-3xl border border-purple-100">
+                    <label for="strength-input" class="block text-sm font-bold text-purple-900 mb-3 uppercase tracking-wider">Add a Strength:</label>
+                    <div class="flex gap-3">
+                        <input type="text" id="strength-input" class="flex-grow px-4 py-3 rounded-xl border-2 border-purple-200 focus:outline-none focus:border-purple-400" placeholder="e.g., Identifying connections between topics...">
+                        <button onclick="addStrength()" class="bg-purple-500 text-white font-bold px-6 rounded-xl hover:bg-purple-600">Add Strength</button>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-xl font-bold text-slate-800">My Identified Strengths:</h3>
+                    <div id="strengths-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <!-- JS injected -->
+                    </div>
+                </div>
+
+                <div class="pt-8 border-t flex justify-between no-print">
+                    <button onclick="goToSection(1)" class="btn-secondary font-bold py-4 px-8 rounded-2xl">Back</button>
+                    <button onclick="goToSection(3)" class="btn-primary font-bold py-4 px-8 rounded-2xl shadow-md">Next: Challenges &rarr;</button>
+                </div>
+            </section>
+
+            <!-- SECTION 3: CHALLENGES -->
+            <section id="section-3" class="hidden fade-in p-8 sm:p-12 space-y-8">
+                <div class="max-w-2xl">
+                    <h2 class="text-3xl font-black text-slate-900 mb-4">Phase 3: Energy Management</h2>
+                    <p class="text-slate-600 leading-relaxed">Recognizing the areas that drain your energy is the first step toward strategic support. These are Situations where specific, targeted strategies will yield the highest return.</p>
+                </div>
+
+                <div class="bg-rose-50 p-6 rounded-3xl border border-rose-100">
+                    <label for="opportunity-input" class="block text-sm font-bold text-rose-900 mb-3 uppercase tracking-wider">Add a Challenge Area:</label>
+                    <div class="flex gap-3">
+                        <input type="text" id="opportunity-input" class="flex-grow px-4 py-3 rounded-xl border-2 border-rose-200 focus:outline-none focus:border-rose-400" placeholder="e.g., Starting long-form essays...">
+                        <button onclick="addOpportunity()" class="bg-rose-400 text-white font-bold px-6 rounded-xl hover:bg-rose-500">Add Challenge</button>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-xl font-bold text-slate-800">Challenges Identified:</h3>
+                    <div id="opportunities-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <!-- JS injected -->
+                    </div>
+                </div>
+
+                <div class="pt-8 border-t flex justify-between no-print">
+                    <button onclick="goToSection(2)" class="btn-secondary font-bold py-4 px-8 rounded-2xl">Back</button>
+                    <button onclick="goToSection(4)" class="btn-primary font-bold py-4 px-8 rounded-2xl shadow-md">Next: Selection &rarr;</button>
+                </div>
+            </section>
+
+            <!-- SECTION 4: STRATEGIES -->
+            <section id="section-4" class="hidden fade-in p-8 sm:p-12 space-y-8">
+                <div class="max-w-2xl">
+                    <h2 class="text-3xl font-black text-slate-900 mb-4">Phase 4: Recommended Strategies</h2>
+                    <p class="text-slate-600 leading-relaxed">Select the strategies that align with your profile. These will form the base of your academic "Bridges." You can also add your own custom strategies.</p>
+                </div>
+
+                <div class="bg-indigo-50 p-6 rounded-3xl border border-indigo-100">
+                    <label for="custom-strategy-input" class="block text-sm font-bold text-indigo-900 mb-3 uppercase tracking-wider text-xs">Add a Custom Strategy:</label>
+                    <div class="flex gap-3">
+                        <input type="text" id="custom-strategy-input" class="flex-grow px-4 py-3 rounded-xl border-2 border-indigo-200 focus:outline-none focus:border-indigo-400" placeholder="e.g., Using specific apps for scheduling...">
+                        <button onclick="addCustomStrategy()" class="bg-indigo-500 text-white font-bold px-6 rounded-xl hover:bg-indigo-600 whitespace-nowrap">Add Strategy</button>
+                    </div>
+                </div>
+
+                <div id="strategies-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Strategies injected here -->
+                </div>
+
+                <div class="pt-8 border-t flex justify-between no-print">
+                    <button onclick="goToSection(3)" class="btn-secondary font-bold py-4 px-8 rounded-2xl">Back</button>
+                    <button onclick="goToSection(5)" class="btn-primary font-bold py-4 px-8 rounded-2xl shadow-md">Finalize Guide &rarr;</button>
+                </div>
+            </section>
+
+            <!-- SECTION 5: FINAL PLAN -->
+            <section id="section-5" class="hidden fade-in p-8 sm:p-12 space-y-8 overflow-visible">
+                <!-- Header: Formal Certificate Style -->
+                <div class="text-center pb-4 border-b-2 border-slate-100">
+                    <h2 class="text-4xl font-black text-slate-900 tracking-tight">Academic Success Strategy Guide</h2>
+                    <p class="text-slate-500 font-medium">A personalized strengths-based roadmap.</p>
+                </div>
+
+                <!-- Profile and Summary Row -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start print-cols">
+                    <div class="bg-[#f8f9f5] p-6 rounded-[2rem] border border-slate-200">
+                        <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-[#8fb299] mb-4">Cognitive Profile Map</h3>
+                        <div class="chart-container">
+                            <canvas id="summaryChart"></canvas>
+                        </div>
+                        <div class="mt-4 text-[10px] text-slate-500 bg-white p-4 rounded-xl border border-slate-100">
+                            <strong>Reading your peaks:</strong> The points furthest from the center represent your high-efficiency zones. Use these to anchor your study routines.
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-purple-500 mb-2">Core Assets (Peaks)</h3>
+                            <div id="summary-strengths" class="flex flex-wrap gap-2"></div>
+                        </div>
+                        <div>
+                            <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-rose-500 mb-2">Energy Areas (Valleys)</h3>
+                            <div id="summary-opportunities" class="flex flex-wrap gap-2"></div>
+                        </div>
+                        <div class="bg-indigo-50 p-4 rounded-2xl border border-indigo-100 shadow-sm">
+                            <h3 class="text-[9px] font-black text-indigo-900 mb-1 uppercase tracking-widest">The "Bridge" Strategy</h3>
+                            <p class="text-[10px] text-slate-600 leading-tight italic">We use your Peaks to build bridges over your Valleys—transforming challenging tasks into manageable processes.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Strategy Inventory -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#8fb299]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke-width="2" /></svg>
+                        Implementation Toolkit
+                    </h3>
+                    <div id="summary-strategies" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 strategy-grid"></div>
+                </div>
+
+                <!-- Roadmap -->
+                <div class="bg-white p-6 rounded-[2rem] border border-slate-200">
+                    <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 text-center">Your 12-Week Integration Plan</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 roadmap-grid">
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <div class="text-[#8fb299] font-black text-sm mb-1 uppercase">Weeks 1-2</div>
+                            <p class="text-[10px] text-slate-500 leading-relaxed">Choose **one** strategy. Focus on creating a consistent ritual around it.</p>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <div class="text-blue-500 font-black text-sm mb-1 uppercase">Weeks 3-6</div>
+                            <p class="text-[10px] text-slate-500 leading-relaxed">Introduce a second strategy. Test how it interacts with your energy levels.</p>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <div class="text-indigo-500 font-black text-sm mb-1 uppercase">Weeks 7+</div>
+                            <p class="text-[10px] text-slate-500 leading-relaxed">Use "Granularity" for large assignments. Break tasks into tiny micro-steps.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="no-print pt-8 border-t flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="window.print()" class="btn-primary font-bold py-4 px-10 rounded-2xl shadow-lg">Save Success Guide (PDF)</button>
+                    <button onclick="goToSection(1)" class="btn-secondary font-bold py-4 px-10 rounded-2xl">Restart Mapping</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const appData = {
+            strengths: [],
+            opportunities: [],
+            myStrategies: [],
+            customStrategies: []
+        };
+
+        const profileTraits = {
+            "Task Initiation": { description: "The energy needed to start academic work.", value: 0, tags: ['planning', 'procrastination'] },
+            "Focused Attention": { description: "The ability to sustain deep engagement.", value: 0, tags: ['focus'] },
+            "Working Memory": { description: "Holding complex multi-step data in mind.", value: 0, tags: ['memory'] },
+            "Project Mapping": { description: "Organizing assignments and timelines.", value: 0, tags: ['planning']},
+            "Stress Regulation": { description: "Managing pressure and academic set-backs.", value: 0, tags: ['emotional'] },
+            "Processing Style": { description: "How you synthesize and shift between info.", value: 0, tags: ['flexibility'] },
+            "Sensory Awareness": { description: "Campus environment's impact on focus.", value: 0, tags: ['sensory'] },
+            "Collaborative Flow": { description: "Navigating group work and social dynamics.", value: 0, tags: ['social'] }
+        };
+
+        const allStrategies = [
+            { id: 1, title: "The 5-Minute Entry", description: "Commit to a task for 5 minutes only. Lower barrier to start builds momentum.", tags: ['procrastination'] },
+            { id: 2, title: "Pomodoro Method", description: "25 min focus / 5 min reset. Protects your cognitive battery.", tags: ['focus', 'procrastination'] },
+            { id: 3, title: "Granularity Rule", description: "Break tasks into smaller micro-steps until each step feels easy.", tags: ['focus', 'planning'] },
+            { id: 4, title: "Energy-Batching", description: "Group similar tasks together to avoid frequent switching drain.", tags: ['planning'] },
+            { id: 5, title: "Social Scripts", description: "Use templates for group work or professor emails to reduce friction.", tags: ['social'] },
+            { id: 6, title: "Body Doubling", description: "Study alongside others to provide a passive anchor for focus.", tags: ['focus', 'procrastination'] },
+            { id: 7, title: "Sensory Stealth", description: "Use noise-cancelling tech or low-sensory campus zones.", tags: ['sensory', 'focus'] },
+            { id: 8, title: "Assistive Audio", description: "Use dictation to translate ideas into drafts without typing strain.", tags: ['memory', 'focus'] },
+            { id: 10, title: "Self-Regulation (RAIN)", description: "Emotional grounding during high-pressure periods.", tags: ['emotional'] },
+            { id: 11, title: "Weekly Scouting", description: "Review syllabuses every Sunday to prevent surprise energy drain.", tags: ['planning'] }
+        ];
+
+        let profileChartInstance, summaryChartInstance;
+
+        function init() {
+            const checklist = document.getElementById('trait-checklist');
+            Object.keys(profileTraits).forEach(key => {
+                const div = document.createElement('div');
+                div.className = 'flex items-start p-2 bg-white border border-slate-50 rounded-xl hover:bg-slate-50 transition-all cursor-pointer';
+                div.innerHTML = `
+                    <div class="flex items-center h-5 mr-3">
+                        <input id="trait-${key}" type="checkbox" onchange="updateProfile('${key}')" class="w-4 h-4 rounded border-slate-300 text-[#8fb299] focus:ring-[#8fb299]">
+                    </div>
+                    <label for="trait-${key}" class="cursor-pointer">
+                        <span class="block font-bold text-slate-800 text-xs">${key}</span>
+                        <span class="text-[9px] text-slate-400 font-bold uppercase tracking-tight">${profileTraits[key].description}</span>
+                    </label>
+                `;
+                checklist.appendChild(div);
+            });
+            renderCharts();
+        }
+
+        function renderCharts() {
+            const options = {
+                maintainAspectRatio: false,
+                responsive: true,
+                scales: { r: { angleLines: { display: true, color: '#e2e8f0' }, suggestedMin: 0, suggestedMax: 1, ticks: { display: false }, grid: { color: '#f1f5f9' }, pointLabels: { font: { weight: 'bold', size: 9 }, color: '#64748b' } } },
+                plugins: { legend: { display: false } }
+            };
+            const data = {
+                labels: Object.keys(profileTraits),
+                datasets: [{ data: Object.values(profileTraits).map(t => t.value), backgroundColor: 'rgba(143, 178, 153, 0.25)', borderColor: '#8fb299', pointBackgroundColor: '#8fb299', borderWidth: 3 }]
+            };
+
+            if (profileChartInstance) profileChartInstance.destroy();
+            profileChartInstance = new Chart(document.getElementById('profileChart'), { type: 'radar', data, options });
+            
+            if (summaryChartInstance) summaryChartInstance.destroy();
+            summaryChartInstance = new Chart(document.getElementById('summaryChart'), { type: 'radar', data, options });
+        }
+
+        function updateProfile(key) {
+            profileTraits[key].value = document.getElementById(`trait-${key}`).checked ? 1 : 0;
+            renderCharts();
+        }
+
+        function addStrength() {
+            const input = document.getElementById('strength-input');
+            if (input.value.trim()) {
+                appData.strengths.push(input.value.trim());
+                updateLists();
+                input.value = "";
+            }
+        }
+
+        function removeStrength(idx) {
+            appData.strengths.splice(idx, 1);
+            updateLists();
+        }
+
+        function addOpportunity() {
+            const input = document.getElementById('opportunity-input');
+            if (input.value.trim()) {
+                appData.opportunities.push(input.value.trim());
+                updateLists();
+                input.value = "";
+            }
+        }
+
+        function removeOpportunity(idx) {
+            appData.opportunities.splice(idx, 1);
+            updateLists();
+        }
+
+        function addCustomStrategy() {
+            const input = document.getElementById('custom-strategy-input');
+            if (input.value.trim()) {
+                const custom = {
+                    id: 'custom-' + Date.now(),
+                    title: input.value.trim(),
+                    description: "Personal Strategy",
+                    isCustom: true
+                };
+                appData.customStrategies.push(custom);
+                appData.myStrategies.push(custom.id);
+                updateStrategies();
+                input.value = "";
+            }
+        }
+
+        function removeCustomStrategy(id) {
+            appData.customStrategies = appData.customStrategies.filter(s => s.id.toString() !== id.toString());
+            appData.myStrategies = appData.myStrategies.filter(s => s.toString() !== id.toString());
+            updateStrategies();
+        }
+
+        function updateLists() {
+            const sList = document.getElementById('strengths-list');
+            const oList = document.getElementById('opportunities-list');
+            sList.innerHTML = appData.strengths.map((s, idx) => `
+                <div class="card-strength p-3 rounded-xl font-bold text-purple-900 text-[10px] shadow-sm flex justify-between items-center group">
+                    <span>${s}</span>
+                    <button onclick="removeStrength(${idx})" class="text-rose-400 ml-2 group-hover:scale-110 transition-transform"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M6 18L18 6M6 6l12 12" stroke-width="2" /></svg></button>
+                </div>
+            `).join('') || '<p class="text-slate-400 italic text-[10px]">No strengths added.</p>';
+            
+            oList.innerHTML = appData.opportunities.map((o, idx) => `
+                <div class="card-challenge p-3 rounded-xl font-bold text-rose-900 text-[10px] shadow-sm flex justify-between items-center group">
+                    <span>${o}</span>
+                    <button onclick="removeOpportunity(${idx})" class="text-rose-400 ml-2 group-hover:scale-110 transition-transform"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M6 18L18 6M6 6l12 12" stroke-width="2" /></svg></button>
+                </div>
+            `).join('') || '<p class="text-slate-400 italic text-[10px]">No challenges identified.</p>';
+        }
+
+        function updateStrategies() {
+            const container = document.getElementById('strategies-container');
+            const selectedTags = new Set();
+            Object.keys(profileTraits).forEach(k => profileTraits[k].value && profileTraits[k].tags.forEach(t => selectedTags.add(t)));
+            
+            const combined = [...allStrategies.filter(s => s.tags.some(t => selectedTags.has(t))), ...appData.customStrategies];
+            
+            container.innerHTML = combined.map(s => {
+                const sid = s.id.toString();
+                const picked = appData.myStrategies.some(item => item.toString() === sid);
+                const isCustom = sid.startsWith('custom-');
+                
+                return `
+                    <div class="border-2 p-4 rounded-2xl transition-all ${picked ? 'border-[#8fb299] bg-[#f8f9f5]' : 'border-slate-100 bg-white'}">
+                        <div class="flex justify-between items-start mb-1">
+                            <h4 class="font-black text-slate-800 text-[11px]">${s.title}</h4>
+                            <div class="flex gap-1">
+                                ${isCustom ? `<button onclick="removeCustomStrategy('${sid}')" class="text-rose-300 hover:text-rose-600"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2" /></svg></button>` : ''}
+                                <button onclick="toggleStrategy('${sid}')" class="text-[8px] px-2 py-0.5 rounded-full font-bold uppercase ${picked ? 'bg-rose-100 text-rose-600' : 'bg-[#8fb299] text-white'}">
+                                    ${picked ? 'Remove' : 'Select'}
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-[9px] text-slate-500 leading-tight">${s.description}</p>
+                    </div>
+                `;
+            }).join('') || '<p class="col-span-2 text-center text-slate-400 p-8 bg-slate-50 rounded-2xl text-xs">Select traits in Phase 1 to see recommendations.</p>';
+        }
+
+        function toggleStrategy(id) {
+            const sid = id.toString();
+            const idx = appData.myStrategies.findIndex(s => s.toString() === sid);
+            if (idx > -1) {
+                appData.myStrategies.splice(idx, 1);
+            } else {
+                appData.myStrategies.push(sid);
+            }
+            updateStrategies();
+        }
+
+        function generateFinal() {
+            document.getElementById('summary-strengths').innerHTML = appData.strengths.length ? appData.strengths.map(s => `<span class="bg-purple-100 text-purple-700 px-3 py-1.5 rounded-xl text-[9px] font-bold border border-purple-200">${s}</span>`).join('') : '<span class="text-slate-400 italic text-[10px]">No strengths added.</span>';
+            document.getElementById('summary-opportunities').innerHTML = appData.opportunities.length ? appData.opportunities.map(o => `<span class="bg-rose-100 text-rose-700 px-3 py-1.5 rounded-xl text-[9px] font-bold border border-rose-200">${o}</span>`).join('') : '<span class="text-slate-400 italic text-[10px]">No challenges added.</span>';
+            
+            const strategiesDiv = document.getElementById('summary-strategies');
+            const combinedList = [...allStrategies, ...appData.customStrategies];
+            
+            if (appData.myStrategies.length > 0) {
+                strategiesDiv.innerHTML = appData.myStrategies.map(sid => {
+                    const s = combinedList.find(item => item.id.toString() === sid.toString());
+                    if (!s) return '';
+                    return `<div class="bg-white p-3 rounded-xl border border-indigo-100 shadow-sm"><h5 class="font-bold text-indigo-900 mb-1 text-[10px]">${s.title}</h5><p class="text-[9px] text-slate-500 leading-tight">${s.description}</p></div>`;
+                }).join('');
+            } else {
+                strategiesDiv.innerHTML = '<p class="text-slate-400 italic text-[10px] col-span-3">No strategies selected for the final guide.</p>';
+            }
+            renderCharts();
+        }
+
+        function goToSection(n) {
+            document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`section-${n}`).classList.remove('hidden');
+            document.querySelectorAll('.step-item').forEach((li, i) => {
+                li.classList.toggle('active', i+1 === n);
+                li.classList.toggle('completed', i+1 < n);
+            });
+            if (n === 4) updateStrategies();
+            if (n === 5) generateFinal();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
